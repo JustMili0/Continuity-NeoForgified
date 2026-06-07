@@ -45,8 +45,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class ContinuityClient implements ClientModInitializer {
 	public static final String ID = "continuity";
@@ -63,8 +63,8 @@ public class ContinuityClient implements ClientModInitializer {
 		CustomBlockLayers.ReloadListener.init();
 
 		FabricLoader.getInstance().getModContainer(ID).ifPresent(container -> {
-			ResourceManagerHelper.registerBuiltinResourcePack(asId("default"), container, Text.translatable("resourcePack.continuity.default.name"), ResourcePackActivationType.NORMAL);
-			ResourceManagerHelper.registerBuiltinResourcePack(asId("glass_pane_culling_fix"), container, Text.translatable("resourcePack.continuity.glass_pane_culling_fix.name"), ResourcePackActivationType.NORMAL);
+			ResourceManagerHelper.registerBuiltinResourcePack(asId("default"), container, Component.translatable("resourcePack.continuity.default.name"), ResourcePackActivationType.NORMAL);
+			ResourceManagerHelper.registerBuiltinResourcePack(asId("glass_pane_culling_fix"), container, Component.translatable("resourcePack.continuity.glass_pane_culling_fix.name"), ResourcePackActivationType.NORMAL);
 		});
 
 		CtmLoaderRegistry registry = CtmLoaderRegistry.get();
@@ -267,7 +267,7 @@ public class ContinuityClient implements ClientModInitializer {
 		};
 	}
 
-	public static Identifier asId(String path) {
-		return Identifier.of(ID, path);
+	public static ResourceLocation asId(String path) {
+		return ResourceLocation.fromNamespaceAndPath(ID, path);
 	}
 }
