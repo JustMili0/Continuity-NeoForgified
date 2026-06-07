@@ -18,11 +18,11 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
-modId = "neoforge"
+modId = "fabric_api"
 type = "required"
-versionRange = "[${neoforge_version},)"
+versionRange = "[${forgified_fabric_api},)"
 ordering = "NONE"
-side = "BOTH"
+side = "CLIENT"
 
 [[mixins]]
 config = "${mod_id}.mixins.json"
