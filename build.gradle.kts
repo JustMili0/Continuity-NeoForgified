@@ -3,6 +3,11 @@ plugins {
 }
 
 val modId = rootProject.property("mod_id") as String
+version = "${rootProject.property("mod_version")}+mc${libs.versions.minecraft.get()}.neoforge"
+
+base {
+    archivesName.set("${property("archives_base_name")}")
+}
 
 neoForge {
     version = libs.versions.neoforged.loader.get()
@@ -31,22 +36,23 @@ neoForge {
     }
 }
 
-base {
-    archivesName.set("${property("archives_base_name")}")
-}
-
-version = "${rootProject.property("mod_version")}+mc${libs.versions.minecraft.get()}.neoforge"
-
 repositories {
     //maven("https://maven.bawnorton.com/releases") // MixinSquared extension for MixinExtras
     //maven("https://maven.enjarai.dev/mirrors") // MixinSquared extension for MixinExtras
     maven("https://api.modrinth.com/maven")
     maven("https://maven.parchmentmc.org")
     maven("https://maven.su5ed.dev/releases")
+    maven("https://maven.caffeinemc.net/releases")
 }
 
 dependencies {
+    // Forgified Fabric API
     implementation(libs.neoforged.fabric.api.get())
+
+    // Sodium API for Sodium capable screen
+    compileOnly("net.caffeinemc:sodium-neoforge-api:0.8.12-alpha.4+mc1.21.1")
+
+    // NOTE: Download Sodium and Reese's Sodium Options into run/mods/ because NeoForge sucks ass at loading Sodium
 }
 
 tasks {
