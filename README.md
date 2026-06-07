@@ -1,3 +1,11 @@
+# Continuity NeoForgified
+
+Continuity NeoForgified is a native-er port of Continuity to NeoForge 1.21.1 using just Forgified Fabric API without Sinytra Connector.
+
+There are *some* plans to port it for more versions and make it fully Neo-native to not depend on anything Sinytra-related
+
+Full credit to PepperCode1 (aka PepperBell), the original creator of Continuity.
+
 # Continuity
 
 Continuity is a Minecraft mod that allows resource packs that use the OptiFine connected textures format, OptiFine emissive textures format (only for blocks and item models), or OptiFine custom block layers format to work without OptiFine.
