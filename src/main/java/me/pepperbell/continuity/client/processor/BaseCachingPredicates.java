@@ -1,17 +1,16 @@
 package me.pepperbell.continuity.client.processor;
 
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.api.client.CachingPredicates;
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class BaseCachingPredicates implements CachingPredicates {
 	@Nullable

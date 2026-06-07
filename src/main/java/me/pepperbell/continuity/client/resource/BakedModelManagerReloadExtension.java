@@ -1,14 +1,5 @@
 package me.pepperbell.continuity.client.resource;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.pepperbell.continuity.client.mixinterface.ModelLoaderExtension;
 import me.pepperbell.continuity.client.model.QuadProcessors;
@@ -18,6 +9,14 @@ import net.minecraft.client.resources.model.AtlasSet;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BakedModelManagerReloadExtension {
 	private final CompletableFuture<CtmPropertiesLoader.LoadingResult> ctmLoadingResultFuture;

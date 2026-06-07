@@ -1,14 +1,14 @@
 package me.pepperbell.continuity.client.processor;
 
-import java.util.List;
-import java.util.function.Function;
-
 import me.pepperbell.continuity.api.client.QuadProcessor;
 import me.pepperbell.continuity.client.ContinuityClient;
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import me.pepperbell.continuity.client.util.TextureUtil;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
+
+import java.util.List;
+import java.util.function.Function;
 
 public abstract class AbstractQuadProcessorFactory<T extends BaseCtmProperties> implements QuadProcessor.Factory<T> {
 	@Override

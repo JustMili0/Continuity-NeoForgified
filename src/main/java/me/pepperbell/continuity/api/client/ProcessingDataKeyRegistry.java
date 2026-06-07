@@ -1,13 +1,12 @@
 package me.pepperbell.continuity.api.client;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
+import me.pepperbell.continuity.impl.client.ProcessingDataKeyRegistryImpl;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import me.pepperbell.continuity.impl.client.ProcessingDataKeyRegistryImpl;
-import net.minecraft.resources.ResourceLocation;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @ApiStatus.NonExtendable
 public interface ProcessingDataKeyRegistry {

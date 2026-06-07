@@ -1,11 +1,5 @@
 package me.pepperbell.continuity.client.properties.overlay;
 
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.client.properties.BasicConnectingCtmProperties;
 import me.pepperbell.continuity.client.properties.PropertiesParsingHelper;
 import me.pepperbell.continuity.client.resource.ResourceRedirectHandler;
@@ -13,6 +7,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Properties;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public class StandardOverlayCtmProperties extends BasicConnectingCtmProperties implements OverlayPropertiesSection.Provider {
 	protected OverlayPropertiesSection overlaySection;

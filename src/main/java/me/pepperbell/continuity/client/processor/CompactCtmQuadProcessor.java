@@ -1,12 +1,5 @@
 package me.pepperbell.continuity.client.processor;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
@@ -29,6 +22,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 	protected static final int[][] QUADRANT_INDEX_MAPS = new int[8][];

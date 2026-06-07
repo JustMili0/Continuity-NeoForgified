@@ -1,8 +1,5 @@
 package me.pepperbell.continuity.client.properties;
 
-import java.util.Locale;
-import java.util.Properties;
-
 import me.pepperbell.continuity.client.ContinuityClient;
 import me.pepperbell.continuity.client.processor.ConnectionPredicate;
 import me.pepperbell.continuity.client.util.SpriteCalculator;
@@ -14,6 +11,9 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.Locale;
+import java.util.Properties;
 
 public class BasicConnectingCtmProperties extends BaseCtmProperties {
 	protected ConnectionPredicate connectionPredicate;

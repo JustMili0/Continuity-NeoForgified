@@ -1,11 +1,5 @@
 package me.pepperbell.continuity.client.processor.overlay;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.pepperbell.continuity.api.client.QuadProcessor;
 import me.pepperbell.continuity.client.processor.ProcessingDataKeys;
@@ -27,6 +21,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SimpleOverlayQuadProcessor extends SimpleQuadProcessor {
 	protected int tintIndex;

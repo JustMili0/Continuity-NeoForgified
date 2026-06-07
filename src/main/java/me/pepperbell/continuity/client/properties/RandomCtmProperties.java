@@ -1,7 +1,5 @@
 package me.pepperbell.continuity.client.properties;
 
-import java.util.Properties;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.pepperbell.continuity.client.ContinuityClient;
@@ -10,6 +8,8 @@ import me.pepperbell.continuity.client.util.RandomIndexProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
+
+import java.util.Properties;
 
 public class RandomCtmProperties extends BaseCtmProperties {
 	protected RandomIndexProvider.Factory indexProviderFactory = RandomIndexProvider.UnweightedFactory.INSTANCE;

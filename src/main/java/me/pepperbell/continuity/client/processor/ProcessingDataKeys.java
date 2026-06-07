@@ -1,14 +1,14 @@
 package me.pepperbell.continuity.client.processor;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import me.pepperbell.continuity.api.client.ProcessingDataKey;
 import me.pepperbell.continuity.api.client.ProcessingDataKeyRegistry;
 import me.pepperbell.continuity.client.ContinuityClient;
 import me.pepperbell.continuity.client.processor.overlay.SimpleOverlayQuadProcessor;
 import me.pepperbell.continuity.client.processor.overlay.StandardOverlayQuadProcessor;
 import net.minecraft.core.BlockPos;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public final class ProcessingDataKeys {
 	public static final ProcessingDataKey<BlockPos.MutableBlockPos> MUTABLE_POS = create("mutable_pos", BlockPos.MutableBlockPos::new);

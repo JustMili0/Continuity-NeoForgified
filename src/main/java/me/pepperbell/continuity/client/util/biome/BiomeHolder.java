@@ -1,13 +1,12 @@
 package me.pepperbell.continuity.client.util.biome;
 
-import java.util.Map;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.client.ContinuityClient;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public final class BiomeHolder {
 	private final ResourceLocation id;

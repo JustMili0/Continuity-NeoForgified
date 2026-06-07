@@ -1,10 +1,5 @@
 package me.pepperbell.continuity.client.properties.overlay;
 
-import java.util.Locale;
-import java.util.Properties;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.client.ContinuityClient;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.minecraft.ResourceLocationException;
@@ -12,6 +7,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
+import java.util.Properties;
 
 public class OverlayPropertiesSection {
 	protected Properties properties;

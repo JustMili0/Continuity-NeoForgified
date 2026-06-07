@@ -1,10 +1,5 @@
 package me.pepperbell.continuity.client.util.biome;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -13,6 +8,10 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.Set;
 
 public final class BiomeHolderManager {
 	private static final Map<ResourceLocation, BiomeHolder> HOLDER_CACHE = new Object2ObjectOpenHashMap<>();

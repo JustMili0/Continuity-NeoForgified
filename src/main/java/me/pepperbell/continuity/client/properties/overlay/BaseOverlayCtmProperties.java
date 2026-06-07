@@ -1,11 +1,11 @@
 package me.pepperbell.continuity.client.properties.overlay;
 
-import java.util.Properties;
-
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
+
+import java.util.Properties;
 
 public class BaseOverlayCtmProperties extends BaseCtmProperties implements OverlayPropertiesSection.Provider {
 	protected OverlayPropertiesSection overlaySection;

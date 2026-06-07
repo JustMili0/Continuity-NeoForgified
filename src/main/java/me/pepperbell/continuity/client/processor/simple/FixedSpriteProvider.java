@@ -1,9 +1,5 @@
 package me.pepperbell.continuity.client.processor.simple;
 
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.api.client.ProcessingDataProvider;
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
@@ -12,6 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 public class FixedSpriteProvider implements SpriteProvider {
 	protected TextureAtlasSprite sprite;

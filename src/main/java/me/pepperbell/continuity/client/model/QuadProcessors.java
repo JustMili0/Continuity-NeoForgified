@@ -1,9 +1,5 @@
 package me.pepperbell.continuity.client.model;
 
-import java.util.List;
-import java.util.concurrent.locks.StampedLock;
-import java.util.function.Function;
-
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
@@ -11,6 +7,10 @@ import me.pepperbell.continuity.api.client.CachingPredicates;
 import me.pepperbell.continuity.api.client.QuadProcessor;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.List;
+import java.util.concurrent.locks.StampedLock;
+import java.util.function.Function;
 
 public final class QuadProcessors {
 	private static ProcessorHolder[] processorHolders = new ProcessorHolder[0];

@@ -1,60 +1,46 @@
 package me.pepperbell.continuity.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import me.pepperbell.continuity.api.client.CachingPredicates;
-import me.pepperbell.continuity.api.client.CtmLoader;
-import me.pepperbell.continuity.api.client.CtmLoaderRegistry;
-import me.pepperbell.continuity.api.client.CtmProperties;
-import me.pepperbell.continuity.api.client.QuadProcessor;
+import me.pepperbell.continuity.api.client.*;
+import me.pepperbell.continuity.client.config.ContinuityConfig;
+import me.pepperbell.continuity.client.config.ContinuityConfigScreen;
 import me.pepperbell.continuity.client.processor.BaseCachingPredicates;
 import me.pepperbell.continuity.client.processor.CompactCtmQuadProcessor;
 import me.pepperbell.continuity.client.processor.ProcessingDataKeys;
 import me.pepperbell.continuity.client.processor.TopQuadProcessor;
 import me.pepperbell.continuity.client.processor.overlay.SimpleOverlayQuadProcessor;
 import me.pepperbell.continuity.client.processor.overlay.StandardOverlayQuadProcessor;
-import me.pepperbell.continuity.client.processor.simple.CtmSpriteProvider;
-import me.pepperbell.continuity.client.processor.simple.FixedSpriteProvider;
-import me.pepperbell.continuity.client.processor.simple.HorizontalSpriteProvider;
-import me.pepperbell.continuity.client.processor.simple.HorizontalVerticalSpriteProvider;
-import me.pepperbell.continuity.client.processor.simple.RandomSpriteProvider;
-import me.pepperbell.continuity.client.processor.simple.RepeatSpriteProvider;
-import me.pepperbell.continuity.client.processor.simple.SimpleQuadProcessor;
-import me.pepperbell.continuity.client.processor.simple.VerticalHorizontalSpriteProvider;
-import me.pepperbell.continuity.client.processor.simple.VerticalSpriteProvider;
-import me.pepperbell.continuity.client.properties.BaseCtmProperties;
-import me.pepperbell.continuity.client.properties.CompactConnectingCtmProperties;
-import me.pepperbell.continuity.client.properties.ConnectingCtmProperties;
-import me.pepperbell.continuity.client.properties.OrientedConnectingCtmProperties;
-import me.pepperbell.continuity.client.properties.PropertiesParsingHelper;
-import me.pepperbell.continuity.client.properties.RandomCtmProperties;
-import me.pepperbell.continuity.client.properties.RepeatCtmProperties;
-import me.pepperbell.continuity.client.properties.TileAmountValidator;
-import me.pepperbell.continuity.client.properties.overlay.BaseOverlayCtmProperties;
-import me.pepperbell.continuity.client.properties.overlay.OrientedConnectingOverlayCtmProperties;
-import me.pepperbell.continuity.client.properties.overlay.RandomOverlayCtmProperties;
-import me.pepperbell.continuity.client.properties.overlay.RepeatOverlayCtmProperties;
-import me.pepperbell.continuity.client.properties.overlay.StandardOverlayCtmProperties;
+import me.pepperbell.continuity.client.processor.simple.*;
+import me.pepperbell.continuity.client.properties.*;
+import me.pepperbell.continuity.client.properties.overlay.*;
 import me.pepperbell.continuity.client.resource.CustomBlockLayers;
 import me.pepperbell.continuity.client.resource.ModelWrappingHandler;
 import me.pepperbell.continuity.client.util.RenderUtil;
 import me.pepperbell.continuity.client.util.biome.BiomeHolderManager;
 import me.pepperbell.continuity.impl.client.ProcessingDataKeyRegistryImpl;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ContinuityClient implements ClientModInitializer {
+@Mod(value = ContinuityClient.ID, dist = Dist.CLIENT)
+public class ContinuityClient {
 	public static final String ID = "continuity";
 	public static final String NAME = "Continuity";
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
-	@Override
-	public void onInitializeClient() {
+    public ContinuityClient(IEventBus modEventBus, ModContainer container) {
+        container.registerExtensionPoint(IConfigScreenFactory.class, ($,parent) ->
+            new ContinuityConfigScreen(parent, ContinuityConfig.INSTANCE));
+
 		ProcessingDataKeyRegistryImpl.INSTANCE.init();
 		BiomeHolderManager.init();
 		ProcessingDataKeys.init();
@@ -62,16 +48,23 @@ public class ContinuityClient implements ClientModInitializer {
 		RenderUtil.ReloadListener.init();
 		CustomBlockLayers.ReloadListener.init();
 
-		FabricLoader.getInstance().getModContainer(ID).ifPresent(container -> {
-			ResourceManagerHelper.registerBuiltinResourcePack(asId("default"), container, Component.translatable("resourcePack.continuity.default.name"), ResourcePackActivationType.NORMAL);
-			ResourceManagerHelper.registerBuiltinResourcePack(asId("glass_pane_culling_fix"), container, Component.translatable("resourcePack.continuity.glass_pane_culling_fix.name"), ResourcePackActivationType.NORMAL);
-		});
+        modEventBus.addListener((AddPackFindersEvent event) -> {
+            event.addPackFinders(
+                asId("resourcepacks/default"), PackType.CLIENT_RESOURCES,
+                Component.translatable("resourcePack.continuity.default.name"),
+                PackSource.FEATURE, false, Pack.Position.TOP
+            );
+            event.addPackFinders(
+                asId("resourcepacks/glass_pane_culling_fix"), PackType.CLIENT_RESOURCES,
+                Component.translatable("resourcePack.continuity.glass_pane_culling_fix.name"),
+                PackSource.FEATURE, false, Pack.Position.TOP
+            );
+        });
 
 		CtmLoaderRegistry registry = CtmLoaderRegistry.get();
 		CtmLoader<?> loader;
 
 		// Standard simple methods
-
 		loader = createLoader(
 				OrientedConnectingCtmProperties::new,
 				new TileAmountValidator.AtLeast<>(47),

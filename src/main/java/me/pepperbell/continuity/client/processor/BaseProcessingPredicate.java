@@ -1,13 +1,8 @@
 package me.pepperbell.continuity.client.processor;
 
-import java.util.EnumSet;
-import java.util.function.IntPredicate;
-import java.util.function.Predicate;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.api.client.ProcessingDataProvider;
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
+import net.fabricmc.fabric.api.blockview.v2.FabricBlockView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
@@ -18,6 +13,11 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 
 public class BaseProcessingPredicate implements ProcessingPredicate {
 	@Nullable
@@ -84,7 +84,7 @@ public class BaseProcessingPredicate implements ProcessingPredicate {
 		@Nullable
 		public Biome get(BlockAndTintGetter blockView, BlockPos pos) {
 			if (invalid) {
-				biome = blockView.hasBiomes() ? blockView.getBiomeFabric(pos).value() : null;
+				biome = ((FabricBlockView) blockView).hasBiomes() ? ((FabricBlockView) blockView).getBiomeFabric(pos).value() : null;
 				invalid = false;
 			}
 			return biome;

@@ -1,9 +1,5 @@
 package me.pepperbell.continuity.client.processor.simple;
 
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.api.client.ProcessingDataProvider;
 import me.pepperbell.continuity.client.processor.ProcessingDataKeys;
 import me.pepperbell.continuity.client.processor.Symmetry;
@@ -18,6 +14,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 public class RandomSpriteProvider implements SpriteProvider {
 	protected TextureAtlasSprite[] sprites;

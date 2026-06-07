@@ -1,11 +1,11 @@
 package me.pepperbell.continuity.client.properties;
 
-import java.util.Properties;
-
 import me.pepperbell.continuity.client.processor.OrientationMode;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
+
+import java.util.Properties;
 
 public class OrientedConnectingCtmProperties extends ConnectingCtmProperties {
 	protected OrientationMode orientationMode;

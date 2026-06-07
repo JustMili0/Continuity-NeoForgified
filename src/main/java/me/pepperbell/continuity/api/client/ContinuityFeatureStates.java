@@ -1,8 +1,7 @@
 package me.pepperbell.continuity.api.client;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import me.pepperbell.continuity.impl.client.ContinuityFeatureStatesImpl;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.NonExtendable
 public interface ContinuityFeatureStates {

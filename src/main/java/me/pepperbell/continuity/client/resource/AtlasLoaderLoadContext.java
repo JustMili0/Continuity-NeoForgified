@@ -1,8 +1,9 @@
 package me.pepperbell.continuity.client.resource;
 
-import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public interface AtlasLoaderLoadContext {
 	ThreadLocal<AtlasLoaderLoadContext> THREAD_LOCAL = new ThreadLocal<>();

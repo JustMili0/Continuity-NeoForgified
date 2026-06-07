@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ReloadableResourceManager.class)
 public interface ReloadableResourceManagerImplAccessor {
-	@Accessor("activeManager")
+	@Accessor("resources")
 	CloseableResourceManager getActiveManager();
 }

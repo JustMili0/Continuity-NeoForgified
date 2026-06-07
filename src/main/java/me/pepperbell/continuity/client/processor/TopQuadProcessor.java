@@ -1,7 +1,5 @@
 package me.pepperbell.continuity.client.processor;
 
-import java.util.function.Supplier;
-
 import me.pepperbell.continuity.api.client.QuadProcessor;
 import me.pepperbell.continuity.client.processor.simple.SimpleQuadProcessor;
 import me.pepperbell.continuity.client.properties.ConnectingCtmProperties;
@@ -13,6 +11,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+
+import java.util.function.Supplier;
 
 public class TopQuadProcessor extends AbstractQuadProcessor {
 	protected ConnectionPredicate connectionPredicate;

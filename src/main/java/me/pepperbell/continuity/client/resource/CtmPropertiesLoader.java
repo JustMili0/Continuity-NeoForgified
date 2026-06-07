@@ -1,24 +1,9 @@
 package me.pepperbell.continuity.client.resource;
 
-import java.io.InputStream;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.Function;
-
-import org.jetbrains.annotations.NotNull;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import me.pepperbell.continuity.api.client.CachingPredicates;
-import me.pepperbell.continuity.api.client.CtmLoader;
-import me.pepperbell.continuity.api.client.CtmLoaderRegistry;
-import me.pepperbell.continuity.api.client.CtmProperties;
-import me.pepperbell.continuity.api.client.QuadProcessor;
+import me.pepperbell.continuity.api.client.*;
 import me.pepperbell.continuity.client.ContinuityClient;
 import me.pepperbell.continuity.client.model.QuadProcessors;
 import me.pepperbell.continuity.client.util.BooleanState;
@@ -29,6 +14,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.InputStream;
+import java.util.*;
+import java.util.function.Function;
 
 public class CtmPropertiesLoader {
 	private final ResourceManager resourceManager;

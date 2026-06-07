@@ -1,22 +1,9 @@
 package me.pepperbell.continuity.client.processor.overlay;
 
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.pepperbell.continuity.api.client.ProcessingDataProvider;
 import me.pepperbell.continuity.api.client.QuadProcessor;
-import me.pepperbell.continuity.client.processor.AbstractQuadProcessor;
-import me.pepperbell.continuity.client.processor.AbstractQuadProcessorFactory;
-import me.pepperbell.continuity.client.processor.ConnectionPredicate;
-import me.pepperbell.continuity.client.processor.DirectionMaps;
-import me.pepperbell.continuity.client.processor.ProcessingDataKeys;
-import me.pepperbell.continuity.client.processor.ProcessingPredicate;
+import me.pepperbell.continuity.client.processor.*;
 import me.pepperbell.continuity.client.properties.overlay.OverlayPropertiesSection;
 import me.pepperbell.continuity.client.properties.overlay.StandardOverlayCtmProperties;
 import me.pepperbell.continuity.client.util.QuadUtil;
@@ -34,6 +21,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class StandardOverlayQuadProcessor extends AbstractQuadProcessor {
 	@Nullable

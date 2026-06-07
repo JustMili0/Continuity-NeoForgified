@@ -1,10 +1,5 @@
 package me.pepperbell.continuity.client.util;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.client.ContinuityClient;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
@@ -25,6 +20,10 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.List;
 
 public final class RenderUtil {
 	private static final BlockColors BLOCK_COLORS = Minecraft.getInstance().getBlockColors();

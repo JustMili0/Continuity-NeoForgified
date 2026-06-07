@@ -1,23 +1,7 @@
 package me.pepperbell.continuity.client.properties;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.IntPredicate;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-
-import org.apache.commons.io.FilenameUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.pepperbell.continuity.api.client.CtmProperties;
@@ -41,6 +25,14 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public class BaseCtmProperties implements CtmProperties {
 	public static final ResourceLocation SPECIAL_SKIP_ID = ContinuityClient.asId("special/skip");

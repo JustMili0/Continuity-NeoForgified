@@ -1,8 +1,7 @@
 package me.pepperbell.continuity.client.mixinterface;
 
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.client.resource.ModelWrappingHandler;
+import org.jetbrains.annotations.Nullable;
 
 public interface ModelLoaderExtension {
 	@Nullable

@@ -1,7 +1,5 @@
 package me.pepperbell.continuity.client.processor;
 
-import java.util.function.Supplier;
-
 import me.pepperbell.continuity.api.client.QuadProcessor;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -9,6 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.function.Supplier;
 
 public abstract class AbstractQuadProcessor implements QuadProcessor {
 	protected TextureAtlasSprite[] sprites;

@@ -1,23 +1,7 @@
 package me.pepperbell.continuity.client.properties;
 
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-
-import org.apache.commons.io.FilenameUtils;
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.Hash;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.*;
 import me.pepperbell.continuity.client.ContinuityClient;
 import me.pepperbell.continuity.client.processor.OrientationMode;
 import me.pepperbell.continuity.client.processor.Symmetry;
@@ -28,6 +12,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 public final class PropertiesParsingHelper {
 	public static final Predicate<BlockState> EMPTY_BLOCK_STATE_PREDICATE = state -> false;

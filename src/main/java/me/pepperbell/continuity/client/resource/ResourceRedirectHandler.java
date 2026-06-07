@@ -1,8 +1,5 @@
 package me.pepperbell.continuity.client.resource;
 
-import org.apache.commons.io.FilenameUtils;
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -12,6 +9,8 @@ import me.pepperbell.continuity.client.mixinterface.LifecycledResourceManagerImp
 import me.pepperbell.continuity.client.util.BooleanState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.Nullable;
 
 public class ResourceRedirectHandler {
 	public static final String SPRITE_PATH_START = "continuity_reserved/";

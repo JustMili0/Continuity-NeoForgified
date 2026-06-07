@@ -1,9 +1,5 @@
 package me.pepperbell.continuity.client.processor.simple;
 
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.api.client.QuadProcessor;
 import me.pepperbell.continuity.client.processor.AbstractQuadProcessorFactory;
 import me.pepperbell.continuity.client.processor.BaseProcessingPredicate;
@@ -17,6 +13,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 public class SimpleQuadProcessor implements QuadProcessor {
 	protected SpriteProvider spriteProvider;

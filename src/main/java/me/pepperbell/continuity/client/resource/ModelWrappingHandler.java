@@ -1,10 +1,6 @@
 package me.pepperbell.continuity.client.resource;
 
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
-
 import com.google.common.collect.ImmutableMap;
-
 import me.pepperbell.continuity.client.mixinterface.ModelLoaderExtension;
 import me.pepperbell.continuity.client.model.CtmBakedModel;
 import me.pepperbell.continuity.client.model.EmissiveBakedModel;
@@ -18,6 +14,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 public class ModelWrappingHandler {
 	private final boolean wrapCtm;

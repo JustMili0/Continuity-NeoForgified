@@ -1,7 +1,5 @@
 package me.pepperbell.continuity.client.model;
 
-import java.util.function.Supplier;
-
 import me.pepperbell.continuity.api.client.EmissiveSpriteApi;
 import me.pepperbell.continuity.client.config.ContinuityConfig;
 import me.pepperbell.continuity.client.util.QuadUtil;
@@ -24,6 +22,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.function.Supplier;
 
 public class EmissiveBakedModel extends ForwardingBakedModel {
 	protected static final RenderMaterial[] EMISSIVE_MATERIALS;

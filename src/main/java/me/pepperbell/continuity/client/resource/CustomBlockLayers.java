@@ -1,14 +1,5 @@
 package me.pepperbell.continuity.client.resource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.function.Predicate;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.client.ContinuityClient;
 import me.pepperbell.continuity.client.properties.PropertiesParsingHelper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -21,6 +12,14 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.function.Predicate;
 
 public final class CustomBlockLayers {
 	public static final ResourceLocation LOCATION = ResourceLocation.withDefaultNamespace("optifine/block.properties");

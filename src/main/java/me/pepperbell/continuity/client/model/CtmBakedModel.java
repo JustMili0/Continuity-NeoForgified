@@ -1,8 +1,5 @@
 package me.pepperbell.continuity.client.model;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import me.pepperbell.continuity.api.client.QuadProcessor;
 import me.pepperbell.continuity.client.config.ContinuityConfig;
 import me.pepperbell.continuity.client.util.RenderUtil;
@@ -17,6 +14,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CtmBakedModel extends ForwardingBakedModel {
 	public static final int PASSES = 4;

@@ -1,9 +1,8 @@
 package me.pepperbell.continuity.api.client;
 
+import me.pepperbell.continuity.impl.client.CtmLoaderRegistryImpl;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-
-import me.pepperbell.continuity.impl.client.CtmLoaderRegistryImpl;
 
 @ApiStatus.NonExtendable
 public interface CtmLoaderRegistry {

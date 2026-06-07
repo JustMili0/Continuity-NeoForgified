@@ -1,10 +1,9 @@
 package me.pepperbell.continuity.client.processor;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.ArrayUtils;
 
 public final class DirectionMaps {
 	public static final Direction[][][] DIRECTION_MAPS = new Direction[6][8][];

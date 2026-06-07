@@ -1,14 +1,5 @@
 package me.pepperbell.continuity.client.util;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.locks.StampedLock;
-import java.util.function.Supplier;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.Unmodifiable;
-
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.fabricmc.fabric.api.client.rendering.v1.InvalidateRenderStateCallback;
@@ -20,6 +11,14 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.locks.StampedLock;
+import java.util.function.Supplier;
 
 public final class SpriteCalculator {
 	private static final BlockModelShaper MODELS = Minecraft.getInstance().getModelManager().getBlockModelShaper();

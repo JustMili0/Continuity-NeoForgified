@@ -1,16 +1,15 @@
 package me.pepperbell.continuity.client.resource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
-import java.util.Properties;
-
-import org.jetbrains.annotations.Nullable;
-
 import me.pepperbell.continuity.client.ContinuityClient;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
+import java.util.Properties;
 
 public final class EmissiveSuffixLoader {
 	public static final ResourceLocation LOCATION = ResourceLocation.withDefaultNamespace("optifine/emissive.properties");

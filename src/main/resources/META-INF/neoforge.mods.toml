@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[0,)"
+license = "${mod_license}"
+
+[[mods]]
+modId = "continuity"
+version = "${mod_version}"
+displayName = "${mod_name}"
+description = "${mod_description}"
+authors = "${mod_authors}"
+logoFile = "icon.png"
+
+[[dependencies.continuity]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_constraint}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.continuity]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "${mod_id}.mixins.json"
