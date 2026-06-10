@@ -3,8 +3,8 @@ minecraft = "1.21.1"
 parchment = "2024.11.17"
 
 # https://fabricmc.net/develop
-neoforged_loader = "21.1.223"
-neoforged_fabric_api = "0.116.7+2.2.4+1.21.1"
+neoforge = "21.1.223"
+forgified_fabric_api = "0.116.7+2.2.4+1.21.1"
 moddevgradle = "2.0.141"
 
 # https://github.com/Bawnorton/MixinSquared/releases
@@ -12,7 +12,7 @@ mixinsquared = "0.3.3"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-neoforged_fabric_api = { module = "org.sinytra.forgified-fabric-api:forgified-fabric-api", version.ref = "neoforged_fabric_api" }
+forgified_fabric_api = { module = "org.sinytra.forgified-fabric-api:forgified-fabric-api", version.ref = "forgified_fabric_api" }
 
 [plugins]
 moddevgradle = { id = "net.neoforged.moddev", version.ref = "moddevgradle" }

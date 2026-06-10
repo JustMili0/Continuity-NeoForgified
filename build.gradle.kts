@@ -10,7 +10,7 @@ base {
 }
 
 neoForge {
-    version = libs.versions.neoforged.loader.get()
+    version = libs.versions.neoforge.get()
 
     parchment {
         mappingsVersion = libs.versions.parchment.get()
@@ -47,7 +47,7 @@ repositories {
 
 dependencies {
     // Forgified Fabric API
-    implementation(libs.neoforged.fabric.api.get())
+    implementation(libs.forgified.fabric.api.get())
 
     // Sodium API for Sodium capable screen
     compileOnly("net.caffeinemc:sodium-neoforge-api:0.8.12-alpha.4+mc1.21.1")
@@ -65,8 +65,8 @@ tasks {
                 "mod_description" to rootProject.property("mod_description"),
                 "mod_authors" to rootProject.property("mod_authors"),
                 "mod_license" to rootProject.property("mod_license"),
-                "neoforge_version" to libs.versions.neoforged.loader.get(),
-                "forgified_fabric_api" to libs.versions.neoforged.fabric.api.get(),
+                "neoforge_version" to libs.versions.neoforge.get(),
+                "forgified_fabric_api" to libs.versions.forgified.fabric.api.get(),
                 "minecraft_version_constraint" to rootProject.property("minecraft_version_constraint_forge"),
             ))
         }
