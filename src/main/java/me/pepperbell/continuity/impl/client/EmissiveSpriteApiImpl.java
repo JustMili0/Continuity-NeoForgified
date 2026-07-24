@@ -1,7 +1,7 @@
 package me.pepperbell.continuity.impl.client;
 
 import me.pepperbell.continuity.api.client.EmissiveSpriteApi;
-import me.pepperbell.continuity.client.mixinterface.SpriteExtension;
+import me.pepperbell.continuity.client.mixinterface.TextureAtlasSpriteExtension;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +11,6 @@ public final class EmissiveSpriteApiImpl implements EmissiveSpriteApi {
 	@Override
 	@Nullable
 	public TextureAtlasSprite getEmissiveSprite(TextureAtlasSprite sprite) {
-		return ((SpriteExtension) sprite).continuity$getEmissiveSprite();
+		return ((TextureAtlasSpriteExtension) sprite).continuity$getEmissiveSprite();
 	}
 }

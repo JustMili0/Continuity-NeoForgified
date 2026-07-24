@@ -2,8 +2,7 @@ package me.pepperbell.continuity.client.properties.overlay;
 
 import me.pepperbell.continuity.client.properties.BasicConnectingCtmProperties;
 import me.pepperbell.continuity.client.properties.PropertiesParsingHelper;
-import me.pepperbell.continuity.client.resource.ResourceRedirectHandler;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,11 +15,11 @@ import java.util.function.Predicate;
 public class StandardOverlayCtmProperties extends BasicConnectingCtmProperties implements OverlayPropertiesSection.Provider {
 	protected OverlayPropertiesSection overlaySection;
 	@Nullable
-	protected Set<ResourceLocation> connectTilesSet;
+	protected Set<Identifier> connectTilesSet;
 	@Nullable
 	protected Predicate<BlockState> connectBlocksPredicate;
 
-	public StandardOverlayCtmProperties(Properties properties, ResourceLocation resourceId, PackResources pack, int packPriority, ResourceManager resourceManager, String method) {
+	public StandardOverlayCtmProperties(Properties properties, Identifier resourceId, PackResources pack, int packPriority, ResourceManager resourceManager, String method) {
 		super(properties, resourceId, pack, packPriority, resourceManager, method);
 		overlaySection = new OverlayPropertiesSection(properties, resourceId, packId);
 	}
@@ -39,7 +38,7 @@ public class StandardOverlayCtmProperties extends BasicConnectingCtmProperties i
 	}
 
 	protected void parseConnectTiles() {
-		connectTilesSet = PropertiesParsingHelper.parseMatchTiles(properties, "connectTiles", resourceId, packId, ResourceRedirectHandler.get(resourceManager));
+		connectTilesSet = PropertiesParsingHelper.parseMatchTiles(properties, "connectTiles", resourceId, packId);
 	}
 
 	protected void parseConnectBlocks() {
@@ -47,7 +46,7 @@ public class StandardOverlayCtmProperties extends BasicConnectingCtmProperties i
 	}
 
 	@Nullable
-	public Set<ResourceLocation> getConnectTilesSet() {
+	public Set<Identifier> getConnectTilesSet() {
 		return connectTilesSet;
 	}
 

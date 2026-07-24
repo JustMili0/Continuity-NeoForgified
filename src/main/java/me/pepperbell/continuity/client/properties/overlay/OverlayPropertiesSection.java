@@ -1,10 +1,10 @@
 package me.pepperbell.continuity.client.properties.overlay;
 
 import me.pepperbell.continuity.client.ContinuityClient;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -14,15 +14,15 @@ import java.util.Properties;
 
 public class OverlayPropertiesSection {
 	protected Properties properties;
-	protected ResourceLocation resourceId;
+	protected Identifier resourceId;
 	protected String packId;
 
 	protected int tintIndex = -1;
 	@Nullable
 	protected BlockState tintBlock;
-	protected BlendMode layer = BlendMode.CUTOUT_MIPPED;
+	protected ChunkSectionLayer layer = ChunkSectionLayer.CUTOUT;
 
-	public OverlayPropertiesSection(Properties properties, ResourceLocation resourceId, String packId) {
+	public OverlayPropertiesSection(Properties properties, Identifier resourceId, String packId) {
 		this.properties = properties;
 		this.resourceId = resourceId;
 		this.packId = packId;
@@ -60,20 +60,20 @@ public class OverlayPropertiesSection {
 
 		String[] parts = tintBlockStr.trim().split(":", 3);
 		if (parts.length != 0) {
-			ResourceLocation blockId;
+			Identifier blockId;
 			try {
 				if (parts.length == 1 || parts[1].contains("=")) {
-					blockId = ResourceLocation.withDefaultNamespace(parts[0]);
+					blockId = Identifier.withDefaultNamespace(parts[0]);
 				} else {
-					blockId = ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);
+					blockId = Identifier.fromNamespaceAndPath(parts[0], parts[1]);
 				}
-			} catch (ResourceLocationException e) {
+			} catch (IdentifierException e) {
 				ContinuityClient.LOGGER.warn("Invalid 'tintBlock' value '" + tintBlockStr + "' in file '" + resourceId + "' in pack '" + packId + "'", e);
 				return;
 			}
 
 			if (BuiltInRegistries.BLOCK.containsKey(blockId)) {
-				Block block = BuiltInRegistries.BLOCK.get(blockId);
+				Block block = BuiltInRegistries.BLOCK.getValue(blockId);
 				tintBlock = block.defaultBlockState();
 			} else {
 				ContinuityClient.LOGGER.warn("Unknown block '" + blockId + "' in 'tintBlock' value '" + tintBlockStr + "' in file '" + resourceId + "' in pack '" + packId + "'");
@@ -91,10 +91,9 @@ public class OverlayPropertiesSection {
 
 		String layerStr1 = layerStr.trim().toLowerCase(Locale.ROOT);
 		switch (layerStr1) {
-			case "cutout_mipped" -> layer = BlendMode.CUTOUT_MIPPED;
-			case "cutout" -> layer = BlendMode.CUTOUT;
-			case "translucent" -> layer = BlendMode.TRANSLUCENT;
-			default -> ContinuityClient.LOGGER.warn("Unknown 'layer' value '" + layerStr + " in file '" + resourceId + "' in pack '" + packId + "'");
+			case "cutout" -> layer = ChunkSectionLayer.CUTOUT;
+			case "translucent" -> layer = ChunkSectionLayer.TRANSLUCENT;
+			default -> ContinuityClient.LOGGER.warn("Unknown 'layer' value '" + layerStr + "' in file '" + resourceId + "' in pack '" + packId + "'");
 		}
 	}
 
@@ -107,7 +106,7 @@ public class OverlayPropertiesSection {
 		return tintBlock;
 	}
 
-	public BlendMode getLayer() {
+	public ChunkSectionLayer getLayer() {
 		return layer;
 	}
 

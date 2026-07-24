@@ -6,16 +6,14 @@ import me.pepperbell.continuity.client.processor.BaseProcessingPredicate;
 import me.pepperbell.continuity.client.processor.ProcessingPredicate;
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import me.pepperbell.continuity.client.util.QuadUtil;
-import me.pepperbell.continuity.client.util.TextureUtil;
-import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
+import me.pepperbell.continuity.client.util.RenderUtil;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.MutableQuadView;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Supplier;
 
 public class SimpleQuadProcessor implements QuadProcessor {
 	protected SpriteProvider spriteProvider;
@@ -27,11 +25,11 @@ public class SimpleQuadProcessor implements QuadProcessor {
 	}
 
 	@Override
-	public ProcessingResult processQuad(MutableQuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter blockView, BlockState appearanceState, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, int pass, ProcessingContext context) {
-		if (!processingPredicate.shouldProcessQuad(quad, sprite, blockView, appearanceState, state, pos, context)) {
+	public ProcessingResult processQuad(MutableQuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter level, BlockPos pos, BlockState appearanceState, BlockState state, RandomSource random, int pass, ProcessingContext context) {
+		if (!processingPredicate.shouldProcessQuad(quad, sprite, level, pos, appearanceState, state, context)) {
 			return ProcessingResult.NEXT_PROCESSOR;
 		}
-		TextureAtlasSprite newSprite = spriteProvider.getSprite(quad, sprite, blockView, appearanceState, state, pos, randomSupplier, context);
+		TextureAtlasSprite newSprite = spriteProvider.getSprite(quad, sprite, level, pos, appearanceState, state, random, context);
 		return process(quad, sprite, newSprite);
 	}
 
@@ -39,7 +37,7 @@ public class SimpleQuadProcessor implements QuadProcessor {
 		if (newSprite == null) {
 			return ProcessingResult.STOP;
 		}
-		if (TextureUtil.isMissingSprite(newSprite)) {
+		if (RenderUtil.isMissingSprite(newSprite)) {
 			return ProcessingResult.NEXT_PROCESSOR;
 		}
 		QuadUtil.interpolate(quad, oldSprite, newSprite);
@@ -59,8 +57,8 @@ public class SimpleQuadProcessor implements QuadProcessor {
 		}
 
 		@Override
-		public int getTextureAmount(T properties) {
-			return spriteProviderFactory.getTextureAmount(properties);
+		public int getSpriteAmount(T properties) {
+			return spriteProviderFactory.getSpriteAmount(properties);
 		}
 	}
 }

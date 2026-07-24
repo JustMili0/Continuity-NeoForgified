@@ -1,6 +1,6 @@
 package me.pepperbell.continuity.client.resource;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -10,17 +10,18 @@ import java.util.concurrent.CompletableFuture;
 public interface SpriteLoaderLoadContext {
 	ThreadLocal<SpriteLoaderLoadContext> THREAD_LOCAL = new ThreadLocal<>();
 
-	CompletableFuture<@Nullable Set<ResourceLocation>> getExtraIdsFuture(ResourceLocation atlasId);
+	@Nullable
+	CompletableFuture<Set<Identifier>> getExtraIdsFuture(Identifier atlasId);
 
 	@Nullable
-	EmissiveControl getEmissiveControl(ResourceLocation atlasId);
+	EmissiveControl getEmissiveControl(Identifier atlasId);
 
 	interface EmissiveControl {
 		@Nullable
-		Map<ResourceLocation, ResourceLocation> getEmissiveIdMap();
+		Map<Identifier, Identifier> getEmissiveIdMap();
 
-		void setEmissiveIdMap(Map<ResourceLocation, ResourceLocation> emissiveIdMap);
+		void setEmissiveIdMap(Map<Identifier, Identifier> emissiveIdMap);
 
-		void markHasEmissives();
+		void setHasEmissives(boolean hasEmissives);
 	}
 }

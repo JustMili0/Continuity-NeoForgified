@@ -1,6 +1,5 @@
 package me.pepperbell.continuity.client.config;
 
-import java.util.Objects;
 import me.pepperbell.continuity.client.ContinuityClient;
 import net.caffeinemc.mods.sodium.api.config.ConfigEntryPoint;
 import net.caffeinemc.mods.sodium.api.config.option.OptionBinding;
@@ -10,43 +9,48 @@ import net.caffeinemc.mods.sodium.api.config.structure.ConfigBuilder;
 import net.minecraft.network.chat.Component;
 
 public class SodiumConfigImpl implements ConfigEntryPoint {
-    public void registerConfigLate(ConfigBuilder builder) {
-        ContinuityConfig config = ContinuityConfig.INSTANCE;
+	@Override
+	public void registerConfigLate(ConfigBuilder builder) {
+		ContinuityConfig config = ContinuityConfig.INSTANCE;
 
-        builder.registerOwnModOptions()
-            .setNonTintedIcon(ContinuityClient.asId("icon.png"))
-            .addPage(builder.createOptionPage()
-                .setName(Component.translatable(ContinuityConfigScreen.getTranslationKey("title")))
+		builder.registerOwnModOptions()
+				.setNonTintedIcon(ContinuityClient.asId("icon.png"))
+				.addPage(builder.createOptionPage()
+						.setName(Component.translatable(ContinuityConfigScreen.getTranslationKey("title")))
+						.addOption(asSodiumOption(builder, config, config.connectedTextures)
+								.setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD))
+						.addOption(asSodiumOption(builder, config, config.emissiveTextures)
+								.setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)));
+	}
 
-                .addOption(newOption(builder, config, config.connectedTextures)
-                    .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD))
-                .addOption(newOption(builder, config, config.emissiveTextures)
-                    .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD))
-                .addOption(newOption(builder, config, config.customBlockLayers)
-                    .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD))
-            );
-    }
+	private static BooleanOptionBuilder asSodiumOption(ConfigBuilder builder, ContinuityConfig config, Option.BooleanOption option) {
+		String translationKey = ContinuityConfigScreen.getTranslationKey(option.getKey());
+		Component component = Component.translatable(translationKey);
+		Component tooltipComponent = Component.translatable(ContinuityConfigScreen.getTooltipKey(translationKey));
 
-    private static BooleanOptionBuilder newOption(ConfigBuilder builder, ContinuityConfig config, Option.BooleanOption option) {
-        String translationKey = ContinuityConfigScreen.getTranslationKey(option.getKey());
-        Objects.requireNonNull(config);
+		return builder.createBooleanOption(ContinuityClient.asId(option.getKey()))
+				.setName(component)
+				.setTooltip(tooltipComponent)
+				.setDefaultValue(option.getDefault())
+				.setBinding(new OptionBindingImpl<>(option))
+				.setStorageHandler(config::save);
+	}
 
-        return builder.createBooleanOption(ContinuityClient.asId(option.getKey()))
-            .setName(Component.translatable(translationKey))
-            .setTooltip(Component.translatable(ContinuityConfigScreen.getTooltipKey(translationKey)))
-            .setDefaultValue(option.get())
-            .setBinding(new OptionBindingImpl<>(option))
-            .setStorageHandler(config::save);
-    }
+	private static class OptionBindingImpl<T> implements OptionBinding<T> {
+		private final Option<T> option;
 
-    private record OptionBindingImpl<T>(Option<T> option) implements OptionBinding<T> {
+		public OptionBindingImpl(Option<T> option) {
+			this.option = option;
+		}
 
-        public void save(T value) {
-                this.option.set(value);
-            }
+		@Override
+		public void save(T value) {
+			option.set(value);
+		}
 
-            public T load() {
-                return this.option.get();
-            }
-        }
+		@Override
+		public T load() {
+			return option.get();
+		}
+	}
 }

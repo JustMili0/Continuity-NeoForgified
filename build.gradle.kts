@@ -45,7 +45,7 @@ dependencies {
     implementation(libs.forgified.fabric.api.get())
 
     // Sodium API for Sodium capable screen
-    compileOnly("net.caffeinemc:sodium-neoforge-api:0.8.12-alpha.4+mc1.21.1")
+    compileOnly("net.caffeinemc:sodium-neoforge-api:0.8.12+mc26.1.2")
 
     // NOTE: Download Sodium and Reese's Sodium Options into run/mods/ because NeoForge sucks ass at loading Sodium
 }

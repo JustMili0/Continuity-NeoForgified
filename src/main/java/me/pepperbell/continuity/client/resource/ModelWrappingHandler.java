@@ -1,81 +1,43 @@
 package me.pepperbell.continuity.client.resource;
 
-import com.google.common.collect.ImmutableMap;
-import me.pepperbell.continuity.client.mixinterface.ModelLoaderExtension;
-import me.pepperbell.continuity.client.model.CtmBakedModel;
-import me.pepperbell.continuity.client.model.EmissiveBakedModel;
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import me.pepperbell.continuity.client.model.CtmBlockStateModel;
+import me.pepperbell.continuity.client.model.EmissiveBlockStateModel;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelModifier;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
+import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 
-public class ModelWrappingHandler {
-	private final boolean wrapCtm;
-	private final boolean wrapEmissive;
-	private final ImmutableMap<ModelResourceLocation, BlockState> blockStateModelIds;
+import java.util.concurrent.CompletableFuture;
 
-	private ModelWrappingHandler(boolean wrapCtm, boolean wrapEmissive) {
-		this.wrapCtm = wrapCtm;
-		this.wrapEmissive = wrapEmissive;
-		blockStateModelIds = createBlockStateModelIdMap();
-	}
-
-	@Nullable
-	public static ModelWrappingHandler create(boolean wrapCtm, boolean wrapEmissive) {
-		if (!wrapCtm && !wrapEmissive) {
-			return null;
-		}
-		return new ModelWrappingHandler(wrapCtm, wrapEmissive);
-	}
-
-	private static ImmutableMap<ModelResourceLocation, BlockState> createBlockStateModelIdMap() {
-		ImmutableMap.Builder<ModelResourceLocation, BlockState> builder = ImmutableMap.builder();
-		// Match code of BakedModelManager#bake
-		for (Block block : BuiltInRegistries.BLOCK) {
-			ResourceLocation blockId = block.builtInRegistryHolder().key().location();
-			for (BlockState state : block.getStateDefinition().getPossibleStates()) {
-				ModelResourceLocation modelId = BlockModelShaper.stateToModelLocation(blockId, state);
-				builder.put(modelId, state);
-			}
-		}
-		return builder.build();
-	}
-
-	public BakedModel wrap(@Nullable BakedModel model, @UnknownNullability ResourceLocation resourceId, @UnknownNullability ModelResourceLocation topLevelId) {
-		if (model != null && !model.isCustomRenderer() && (resourceId == null || !resourceId.equals(ModelBakery.MISSING_MODEL_LOCATION))) {
-			if (wrapCtm) {
-				if (topLevelId != null) {
-					BlockState state = blockStateModelIds.get(topLevelId);
-					if (state != null) {
-						model = new CtmBakedModel(model, state);
-					}
-				}
-			}
-			if (wrapEmissive) {
-				model = new EmissiveBakedModel(model);
-			}
-		}
-		return model;
-	}
+public final class ModelWrappingHandler {
+	public static final PreparableReloadListener.StateKey<CompletableFuture<Boolean>> WRAP_CTM_FUTURE_KEY = new PreparableReloadListener.StateKey<>();
+	public static final PreparableReloadListener.StateKey<CompletableFuture<Boolean>> WRAP_EMISSIVE_FUTURE_KEY = new PreparableReloadListener.StateKey<>();
 
 	public static void init() {
-		ModelLoadingPlugin.register(pluginCtx -> {
-			pluginCtx.modifyModelAfterBake().register(ModelModifier.WRAP_LAST_PHASE, (model, ctx) -> {
-				ModelBakery modelLoader = ctx.loader();
-				ModelWrappingHandler wrappingHandler = ((ModelLoaderExtension) modelLoader).continuity$getModelWrappingHandler();
-				if (wrappingHandler != null) {
-					return wrappingHandler.wrap(model, ctx.resourceId(), ctx.topLevelId());
+		PreparableModelLoadingPlugin.register((store, executor) -> {
+			CompletableFuture<Boolean> wrapCtmFuture = store.get(WRAP_CTM_FUTURE_KEY);
+			CompletableFuture<Boolean> wrapEmissiveFuture = store.get(WRAP_EMISSIVE_FUTURE_KEY);
+			return CompletableFuture.allOf(wrapCtmFuture, wrapEmissiveFuture).thenApplyAsync(v -> {
+				return new Data(wrapCtmFuture.join(), wrapEmissiveFuture.join());
+			}, executor);
+		}, (data, pluginCtx) -> {
+			boolean wrapCtm = data.wrapCtm();
+			boolean wrapEmissive = data.wrapEmissive();
+			if (!wrapCtm && !wrapEmissive) {
+				return;
+			}
+
+			pluginCtx.modifyBlockModelAfterBake().register(ModelModifier.WRAP_LAST_PHASE, (model, ctx) -> {
+				if (wrapCtm) {
+					model = new CtmBlockStateModel(model, ctx.state());
+				}
+				if (wrapEmissive) {
+					model = new EmissiveBlockStateModel(model);
 				}
 				return model;
 			});
 		});
+	}
+
+	private record Data(boolean wrapCtm, boolean wrapEmissive) {
 	}
 }

@@ -3,8 +3,7 @@ package me.pepperbell.continuity.client.processor;
 import me.pepperbell.continuity.api.client.CachingPredicates;
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,12 +13,12 @@ import java.util.function.Predicate;
 
 public class BaseCachingPredicates implements CachingPredicates {
 	@Nullable
-	protected Set<ResourceLocation> spriteIdSet;
+	protected Set<Identifier> spriteIdSet;
 	@Nullable
 	protected Predicate<BlockState> blockStatePredicate;
 	protected boolean isValidForMultipass;
 
-	public BaseCachingPredicates(@Nullable Set<ResourceLocation> spriteIdSet, @Nullable Predicate<BlockState> blockStatePredicate, boolean isValidForMultipass) {
+	public BaseCachingPredicates(@Nullable Set<Identifier> spriteIdSet, @Nullable Predicate<BlockState> blockStatePredicate, boolean isValidForMultipass) {
 		this.spriteIdSet = spriteIdSet;
 		this.blockStatePredicate = blockStatePredicate;
 		this.isValidForMultipass = isValidForMultipass;
@@ -64,7 +63,7 @@ public class BaseCachingPredicates implements CachingPredicates {
 		}
 
 		@Override
-		public CachingPredicates createPredicates(T properties, Function<Material, TextureAtlasSprite> textureGetter) {
+		public CachingPredicates createPredicates(T properties, Function<Identifier, TextureAtlasSprite> spriteGetter) {
 			return new BaseCachingPredicates(properties.getMatchTilesSet(), properties.getMatchBlocksPredicate(), isValidForMultipass);
 		}
 	}

@@ -2,22 +2,22 @@ package me.pepperbell.continuity.client.util.biome;
 
 import me.pepperbell.continuity.client.ContinuityClient;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public final class BiomeHolder {
-	private final ResourceLocation id;
+	private final Identifier id;
 	@Nullable
 	private Biome biome;
 
-	BiomeHolder(ResourceLocation id) {
+	BiomeHolder(Identifier id) {
 		this.id = id;
 	}
 
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return id;
 	}
 
@@ -26,13 +26,13 @@ public final class BiomeHolder {
 		return biome;
 	}
 
-	void refresh(Registry<Biome> biomeRegistry, Map<ResourceLocation, ResourceLocation> compactIdMap) {
-		ResourceLocation id = compactIdMap.get(this.id);
+	void refresh(Registry<Biome> biomeRegistry, Map<Identifier, Identifier> compactIdMap) {
+		Identifier id = compactIdMap.get(this.id);
 		if (id == null) {
 			id = this.id;
 		}
 		if (biomeRegistry.containsKey(id)) {
-			biome = biomeRegistry.get(id);
+			biome = biomeRegistry.getValue(id);
 		} else {
 			ContinuityClient.LOGGER.warn("Unknown biome '" + this.id + "'");
 		}

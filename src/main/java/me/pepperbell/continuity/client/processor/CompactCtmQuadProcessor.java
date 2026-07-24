@@ -10,24 +10,24 @@ import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import me.pepperbell.continuity.client.properties.CompactConnectingCtmProperties;
 import me.pepperbell.continuity.client.util.MathUtil;
 import me.pepperbell.continuity.client.util.QuadUtil;
-import me.pepperbell.continuity.client.util.TextureUtil;
-import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
+import me.pepperbell.continuity.client.util.RenderUtil;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.MutableQuadView;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadView;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 	protected static final int[][] QUADRANT_INDEX_MAPS = new int[8][];
@@ -67,11 +67,11 @@ public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 	}
 
 	@Override
-	public ProcessingResult processQuadInner(MutableQuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter blockView, BlockState appearanceState, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, int pass, ProcessingContext context) {
+	public ProcessingResult processQuadInner(MutableQuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter level, BlockPos pos, BlockState appearanceState, BlockState state, RandomSource random, int pass, ProcessingContext context) {
 		int orientation = orientationMode.getOrientation(quad, appearanceState);
 		Direction[] directions = DirectionMaps.getMap(quad.lightFace())[orientation];
 		BlockPos.MutableBlockPos mutablePos = context.getData(ProcessingDataKeys.MUTABLE_POS);
-		int connections = CtmSpriteProvider.getConnections(directions, connectionPredicate, innerSeams, mutablePos, blockView, appearanceState, state, pos, quad.lightFace(), sprite);
+		int connections = CtmSpriteProvider.getConnections(directions, connectionPredicate, innerSeams, mutablePos, level, pos, appearanceState, state, quad.lightFace(), sprite);
 
 		//
 
@@ -79,7 +79,7 @@ public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 			int ctmIndex = CtmSpriteProvider.SPRITE_INDEX_MAP[connections];
 			TextureAtlasSprite replacementSprite = replacementSprites[ctmIndex];
 			if (replacementSprite != null) {
-				if (!TextureUtil.isMissingSprite(replacementSprite)) {
+				if (!RenderUtil.isMissingSprite(replacementSprite)) {
 					QuadUtil.interpolate(quad, sprite, replacementSprite);
 				}
 				return ProcessingResult.NEXT_PASS;
@@ -341,7 +341,6 @@ public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 				}
 			}
 
-			context.markHasExtraQuads();
 			return ProcessingResult.DISCARD;
 		} else if (uSplit | vSplit) {
 			boolean firstSplit;
@@ -420,7 +419,6 @@ public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 				splitHalf(quad, sprite, vertexContainer, 2, extraQuadEmitter, spriteIndexB);
 			}
 
-			context.markHasExtraQuads();
 			return ProcessingResult.DISCARD;
 		} else {
 			int quadrant;
@@ -478,7 +476,7 @@ public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 
 	protected void tryInterpolate(MutableQuadView quad, TextureAtlasSprite oldSprite, int spriteIndex) {
 		TextureAtlasSprite newSprite = sprites[spriteIndex];
-		if (!TextureUtil.isMissingSprite(newSprite)) {
+		if (!RenderUtil.isMissingSprite(newSprite)) {
 			QuadUtil.interpolate(quad, oldSprite, newSprite);
 		}
 	}
@@ -606,60 +604,60 @@ public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 	// TODO
 	public static class Factory implements QuadProcessor.Factory<CompactConnectingCtmProperties> {
 		@Override
-		public QuadProcessor createProcessor(CompactConnectingCtmProperties properties, Function<Material, TextureAtlasSprite> textureGetter) {
-			int textureAmount = getTextureAmount(properties);
-			List<Material> spriteIds = properties.getSpriteIds();
+		public QuadProcessor createProcessor(CompactConnectingCtmProperties properties, Function<Identifier, TextureAtlasSprite> spriteGetter) {
+			int spriteAmount = getSpriteAmount(properties);
+			List<Identifier> spriteIds = properties.getSpriteIds();
 			int provided = spriteIds.size();
 			int max = provided;
 
 			TextureAtlasSprite[] replacementSprites = null;
 			Int2IntMap replacementMap = properties.getTileReplacementMap();
 			if (replacementMap != null) {
-				int replacementTextureAmount = getReplacementTextureAmount(properties);
-				replacementSprites = new TextureAtlasSprite[replacementTextureAmount];
+				int replacementSpriteAmount = getReplacementSpriteAmount(properties);
+				replacementSprites = new TextureAtlasSprite[replacementSpriteAmount];
 				ObjectIterator<Int2IntMap.Entry> entryIterator = Int2IntMaps.fastIterator(replacementMap);
 				while (entryIterator.hasNext()) {
 					Int2IntMap.Entry entry = entryIterator.next();
 					int key = entry.getIntKey();
-					if (key < replacementTextureAmount) {
+					if (key < replacementSpriteAmount) {
 						int value = entry.getIntValue();
 						if (value < provided) {
-							replacementSprites[key] = textureGetter.apply(spriteIds.get(value));
+							replacementSprites[key] = spriteGetter.apply(spriteIds.get(value));
 						} else {
 							ContinuityClient.LOGGER.warn("Cannot replace tile " + key + " with tile " + value + " as only " + provided + " tiles were provided in file '" + properties.getResourceId() + "' in pack '" + properties.getPackId() + "'");
 						}
 					} else {
-						ContinuityClient.LOGGER.warn("Cannot replace tile " + key + " as method '" + properties.getMethod() + "' only supports " + replacementTextureAmount + " replacement tiles in file '" + properties.getResourceId() + "' in pack '" + properties.getPackId() + "'");
+						ContinuityClient.LOGGER.warn("Cannot replace tile " + key + " as method '" + properties.getMethod() + "' only supports " + replacementSpriteAmount + " replacement tiles in file '" + properties.getResourceId() + "' in pack '" + properties.getPackId() + "'");
 					}
 				}
 			}
 
-			if (provided > textureAmount) {
+			if (provided > spriteAmount) {
 				if (replacementSprites == null) {
-					ContinuityClient.LOGGER.warn("Method '" + properties.getMethod() + "' requires " + textureAmount + " tiles but " + provided + " were provided in file '" + properties.getResourceId() + "' in pack '" + properties.getPackId() + "'");
+					ContinuityClient.LOGGER.warn("Method '" + properties.getMethod() + "' requires " + spriteAmount + " tiles but " + provided + " were provided in file '" + properties.getResourceId() + "' in pack '" + properties.getPackId() + "'");
 				}
-				max = textureAmount;
+				max = spriteAmount;
 			}
 
-			TextureAtlasSprite[] sprites = new TextureAtlasSprite[textureAmount];
-			TextureAtlasSprite missingSprite = textureGetter.apply(TextureUtil.MISSING_SPRITE_ID);
+			TextureAtlasSprite[] sprites = new TextureAtlasSprite[spriteAmount];
+			TextureAtlasSprite missingSprite = spriteGetter.apply(MissingTextureAtlasSprite.getLocation());
 			boolean supportsNullSprites = supportsNullSprites(properties);
 			for (int i = 0; i < max; i++) {
 				TextureAtlasSprite sprite;
-				Material spriteId = spriteIds.get(i);
-				if (spriteId.equals(BaseCtmProperties.SPECIAL_SKIP_SPRITE_ID)) {
+				Identifier spriteId = spriteIds.get(i);
+				if (spriteId.equals(BaseCtmProperties.SPECIAL_SKIP_ID)) {
 					sprite = missingSprite;
-				} else if (spriteId.equals(BaseCtmProperties.SPECIAL_DEFAULT_SPRITE_ID)) {
+				} else if (spriteId.equals(BaseCtmProperties.SPECIAL_DEFAULT_ID)) {
 					sprite = supportsNullSprites ? null : missingSprite;
 				} else {
-					sprite = textureGetter.apply(spriteId);
+					sprite = spriteGetter.apply(spriteId);
 				}
 				sprites[i] = sprite;
 			}
 
-			if (provided < textureAmount) {
-				ContinuityClient.LOGGER.error("Method '" + properties.getMethod() + "' requires at least " + textureAmount + " tiles but only " + provided + " were provided in file '" + properties.getResourceId() + "' in pack '" + properties.getPackId() + "'");
-				for (int i = provided; i < textureAmount; i++) {
+			if (provided < spriteAmount) {
+				ContinuityClient.LOGGER.error("Method '" + properties.getMethod() + "' requires at least " + spriteAmount + " tiles but only " + provided + " were provided in file '" + properties.getResourceId() + "' in pack '" + properties.getPackId() + "'");
+				for (int i = provided; i < spriteAmount; i++) {
 					sprites[i] = missingSprite;
 				}
 			}
@@ -671,11 +669,11 @@ public class CompactCtmQuadProcessor extends AbstractQuadProcessor {
 			return new CompactCtmQuadProcessor(sprites, BaseProcessingPredicate.fromProperties(properties), properties.getConnectionPredicate(), properties.getInnerSeams(), properties.getOrientationMode(), replacementSprites);
 		}
 
-		public int getTextureAmount(CompactConnectingCtmProperties properties) {
+		public int getSpriteAmount(CompactConnectingCtmProperties properties) {
 			return 5;
 		}
 
-		public int getReplacementTextureAmount(CompactConnectingCtmProperties properties) {
+		public int getReplacementSpriteAmount(CompactConnectingCtmProperties properties) {
 			return 47;
 		}
 

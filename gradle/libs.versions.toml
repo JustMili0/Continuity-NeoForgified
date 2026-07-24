@@ -2,7 +2,7 @@
 minecraft = "26.1.2"
 
 # https://fabricmc.net/develop
-neoforge = "26.1.2.71"
+neoforge = "26.1.2.84"
 forgified_fabric_api = "0.155.0+26.1.2+3.4.2"
 moddevgradle = "2.0.142"
 

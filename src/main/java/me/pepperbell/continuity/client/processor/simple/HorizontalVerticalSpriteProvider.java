@@ -6,16 +6,14 @@ import me.pepperbell.continuity.client.processor.DirectionMaps;
 import me.pepperbell.continuity.client.processor.OrientationMode;
 import me.pepperbell.continuity.client.processor.ProcessingDataKeys;
 import me.pepperbell.continuity.client.properties.OrientedConnectingCtmProperties;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadView;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Supplier;
 
 public class HorizontalVerticalSpriteProvider extends HorizontalSpriteProvider {
 	// Indices for this array are formed from these bit values:
@@ -35,28 +33,28 @@ public class HorizontalVerticalSpriteProvider extends HorizontalSpriteProvider {
 
 	@Override
 	@Nullable
-	public TextureAtlasSprite getSprite(QuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter blockView, BlockState appearanceState, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, ProcessingDataProvider dataProvider) {
+	public TextureAtlasSprite getSprite(QuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter level, BlockPos pos, BlockState appearanceState, BlockState state, RandomSource random, ProcessingDataProvider dataProvider) {
 		Direction[] directions = DirectionMaps.getDirections(orientationMode, quad, appearanceState);
 		BlockPos.MutableBlockPos mutablePos = dataProvider.getData(ProcessingDataKeys.MUTABLE_POS);
-		int connections = getConnections(directions, mutablePos, blockView, appearanceState, state, pos, quad.lightFace(), sprite);
+		int connections = getConnections(directions, mutablePos, level, pos, appearanceState, state, quad.lightFace(), sprite);
 		if (connections != 0) {
 			return sprites[SPRITE_INDEX_MAP[connections]];
 		} else {
-			int secondaryConnections = getSecondaryConnections(directions, mutablePos, blockView, appearanceState, state, pos, quad.lightFace(), sprite);
+			int secondaryConnections = getSecondaryConnections(directions, mutablePos, level, pos, appearanceState, state, quad.lightFace(), sprite);
 			return sprites[SECONDARY_SPRITE_INDEX_MAP[secondaryConnections]];
 		}
 	}
 
-	protected int getSecondaryConnections(Direction[] directions, BlockPos.MutableBlockPos mutablePos, BlockAndTintGetter blockView, BlockState appearanceState, BlockState state, BlockPos pos, Direction face, TextureAtlasSprite quadSprite) {
+	protected int getSecondaryConnections(Direction[] directions, BlockPos.MutableBlockPos mutablePos, BlockAndTintGetter level, BlockPos pos, BlockState appearanceState, BlockState state, Direction face, TextureAtlasSprite quadSprite) {
 		int connections = 0;
 		for (int i = 0; i < 2; i++) {
 			Direction direction = directions[i * 2 + 1];
 			mutablePos.setWithOffset(pos, direction);
-			if (connectionPredicate.shouldConnect(blockView, appearanceState, state, pos, mutablePos, face, quadSprite, innerSeams)) {
+			if (connectionPredicate.shouldConnect(level, pos, appearanceState, state, mutablePos, face, quadSprite, innerSeams)) {
 				connections |= 1 << (i * 3 + 1);
 				for (int j = 0; j < 2; j++) {
 					mutablePos.setWithOffset(pos, direction).move(directions[((i + j) % 2) * 2]);
-					if (connectionPredicate.shouldConnect(blockView, appearanceState, state, pos, mutablePos, face, quadSprite, innerSeams)) {
+					if (connectionPredicate.shouldConnect(level, pos, appearanceState, state, mutablePos, face, quadSprite, innerSeams)) {
 						connections |= 1 << (i * 3 + j * 2);
 					}
 				}
@@ -72,7 +70,7 @@ public class HorizontalVerticalSpriteProvider extends HorizontalSpriteProvider {
 		}
 
 		@Override
-		public int getTextureAmount(OrientedConnectingCtmProperties properties) {
+		public int getSpriteAmount(OrientedConnectingCtmProperties properties) {
 			return 7;
 		}
 	}

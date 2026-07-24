@@ -12,13 +12,13 @@ import me.pepperbell.continuity.client.processor.overlay.StandardOverlayQuadProc
 import me.pepperbell.continuity.client.processor.simple.*;
 import me.pepperbell.continuity.client.properties.*;
 import me.pepperbell.continuity.client.properties.overlay.*;
-import me.pepperbell.continuity.client.resource.CustomBlockLayers;
+import me.pepperbell.continuity.client.resource.CtmResourceReloader;
 import me.pepperbell.continuity.client.resource.ModelWrappingHandler;
 import me.pepperbell.continuity.client.util.RenderUtil;
 import me.pepperbell.continuity.client.util.biome.BiomeHolderManager;
 import me.pepperbell.continuity.impl.client.ProcessingDataKeyRegistryImpl;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -28,7 +28,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.resources.VanillaClientListeners;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,34 +41,37 @@ public class ContinuityClient {
 	public static final String NAME = "Continuity";
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        ProcessingDataKeyRegistryImpl.INSTANCE.setFrozen();
-    }
-
-    public ContinuityClient(IEventBus modEventBus, ModContainer container) {
-        container.registerExtensionPoint(IConfigScreenFactory.class, ($,parent) ->
-            new ContinuityConfigScreen(parent, ContinuityConfig.INSTANCE));
-
+	@SubscribeEvent
+	public static void onClientSetup(FMLClientSetupEvent event) {
 		ProcessingDataKeyRegistryImpl.INSTANCE.init();
+	}
+
+	public ContinuityClient(IEventBus modEventBus, ModContainer container) {
+		container.registerExtensionPoint(IConfigScreenFactory.class, ($, parent) ->
+			new ContinuityConfigScreen(parent, ContinuityConfig.INSTANCE));
+
 		BiomeHolderManager.init();
 		ProcessingDataKeys.init();
 		ModelWrappingHandler.init();
-		RenderUtil.ReloadListener.init();
-		CustomBlockLayers.ReloadListener.init();
 
-        modEventBus.addListener((AddPackFindersEvent event) -> {
-            event.addPackFinders(
-                asId("resourcepacks/default"), PackType.CLIENT_RESOURCES,
-                Component.translatable("resourcePack.continuity.default.name"),
-                PackSource.FEATURE, false, Pack.Position.TOP
-            );
-            event.addPackFinders(
-                asId("resourcepacks/glass_pane_culling_fix"), PackType.CLIENT_RESOURCES,
-                Component.translatable("resourcePack.continuity.glass_pane_culling_fix.name"),
-                PackSource.FEATURE, false, Pack.Position.TOP
-            );
-        });
+		modEventBus.addListener((AddClientReloadListenersEvent event) -> {
+			event.addListener(RenderUtil.ReloadListener.ID, RenderUtil.ReloadListener.INSTANCE);
+			event.addDependency(VanillaClientListeners.ATLASES, RenderUtil.ReloadListener.ID);
+			event.addListener(CtmResourceReloader.ID, CtmResourceReloader.INSTANCE);
+		});
+
+		modEventBus.addListener((AddPackFindersEvent event) -> {
+			event.addPackFinders(
+				asId("resourcepacks/default"), PackType.CLIENT_RESOURCES,
+				Component.translatable("resourcePack.continuity.default.name"),
+				PackSource.FEATURE, false, Pack.Position.TOP
+			);
+			event.addPackFinders(
+				asId("resourcepacks/glass_pane_culling_fix"), PackType.CLIENT_RESOURCES,
+				Component.translatable("resourcePack.continuity.glass_pane_culling_fix.name"),
+				PackSource.FEATURE, false, Pack.Position.TOP
+			);
+		});
 
 		CtmLoaderRegistry registry = CtmLoaderRegistry.get();
 		CtmLoader<?> loader;
@@ -267,7 +272,7 @@ public class ContinuityClient {
 		};
 	}
 
-	public static ResourceLocation asId(String path) {
-		return ResourceLocation.fromNamespaceAndPath(ID, path);
+	public static Identifier asId(String path) {
+		return Identifier.fromNamespaceAndPath(ID, path);
 	}
 }

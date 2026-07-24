@@ -1,7 +1,7 @@
 package me.pepperbell.continuity.client.properties.overlay;
 
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -10,7 +10,7 @@ import java.util.Properties;
 public class BaseOverlayCtmProperties extends BaseCtmProperties implements OverlayPropertiesSection.Provider {
 	protected OverlayPropertiesSection overlaySection;
 
-	public BaseOverlayCtmProperties(Properties properties, ResourceLocation resourceId, PackResources pack, int packPriority, ResourceManager resourceManager, String method) {
+	public BaseOverlayCtmProperties(Properties properties, Identifier resourceId, PackResources pack, int packPriority, ResourceManager resourceManager, String method) {
 		super(properties, resourceId, pack, packPriority, resourceManager, method);
 		overlaySection = new OverlayPropertiesSection(properties, resourceId, packId);
 	}

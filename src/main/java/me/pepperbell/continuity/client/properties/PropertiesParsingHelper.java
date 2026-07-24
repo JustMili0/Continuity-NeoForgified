@@ -3,12 +3,13 @@ package me.pepperbell.continuity.client.properties;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.*;
 import me.pepperbell.continuity.client.ContinuityClient;
+import me.pepperbell.continuity.client.mixin.StateHolderAccessor;
 import me.pepperbell.continuity.client.processor.OrientationMode;
 import me.pepperbell.continuity.client.processor.Symmetry;
 import me.pepperbell.continuity.client.resource.ResourceRedirectHandler;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -23,7 +24,7 @@ public final class PropertiesParsingHelper {
 	public static final Predicate<BlockState> EMPTY_BLOCK_STATE_PREDICATE = state -> false;
 
 	@Nullable
-	public static Set<ResourceLocation> parseMatchTiles(Properties properties, String propertyKey, ResourceLocation fileLocation, String packId, @Nullable ResourceRedirectHandler redirectHandler) {
+	public static Set<Identifier> parseMatchTiles(Properties properties, String propertyKey, Identifier fileLocation, String packId) {
 		String matchTilesStr = properties.getProperty(propertyKey);
 		if (matchTilesStr == null) {
 			return null;
@@ -32,7 +33,7 @@ public final class PropertiesParsingHelper {
 		String[] matchTileStrs = matchTilesStr.trim().split(" ");
 		if (matchTileStrs.length != 0) {
 			String basePath = FilenameUtils.getPath(fileLocation.getPath());
-			ObjectOpenHashSet<ResourceLocation> set = new ObjectOpenHashSet<>();
+			ObjectOpenHashSet<Identifier> set = new ObjectOpenHashSet<>();
 
 			for (int i = 0; i < matchTileStrs.length; i++) {
 				String matchTileStr = matchTileStrs[i];
@@ -71,10 +72,7 @@ public final class PropertiesParsingHelper {
 					if (path.startsWith("textures/")) {
 						path = path.substring(9);
 					} else if (path.startsWith("optifine/")) {
-						if (redirectHandler == null) {
-							continue;
-						}
-						path = redirectHandler.getSourceSpritePath(path + ".png");
+						path = ResourceRedirectHandler.SPRITE_PATH_START + path.substring(9);
 						if (namespace == null) {
 							namespace = fileLocation.getNamespace();
 						}
@@ -83,12 +81,12 @@ public final class PropertiesParsingHelper {
 					}
 
 					if (namespace == null) {
-						namespace = ResourceLocation.DEFAULT_NAMESPACE;
+						namespace = Identifier.DEFAULT_NAMESPACE;
 					}
 
 					try {
-						set.add(ResourceLocation.fromNamespaceAndPath(namespace, path));
-					} catch (ResourceLocationException e) {
+						set.add(Identifier.fromNamespaceAndPath(namespace, path));
+					} catch (IdentifierException e) {
 						ContinuityClient.LOGGER.warn("Invalid '" + propertyKey + "' element '" + matchTileStr + "' at index " + i + " in file '" + fileLocation + "' in pack '" + packId + "'", e);
 					}
 				} else {
@@ -103,7 +101,7 @@ public final class PropertiesParsingHelper {
 	}
 
 	@Nullable
-	public static Predicate<BlockState> parseBlockStates(Properties properties, String propertyKey, ResourceLocation fileLocation, String packId) {
+	public static Predicate<BlockState> parseBlockStates(Properties properties, String propertyKey, Identifier fileLocation, String packId) {
 		String blockStatesStr = properties.getProperty(propertyKey);
 		if (blockStatesStr == null) {
 			return null;
@@ -123,23 +121,23 @@ public final class PropertiesParsingHelper {
 
 				String[] parts = blockStateStr.split(":");
 				if (parts.length != 0) {
-					ResourceLocation blockId;
+					Identifier blockId;
 					int startIndex;
 					try {
 						if (parts.length == 1 || parts[1].contains("=")) {
-							blockId = ResourceLocation.withDefaultNamespace(parts[0]);
+							blockId = Identifier.withDefaultNamespace(parts[0]);
 							startIndex = 1;
 						} else {
-							blockId = ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);
+							blockId = Identifier.fromNamespaceAndPath(parts[0], parts[1]);
 							startIndex = 2;
 						}
-					} catch (ResourceLocationException e) {
+					} catch (IdentifierException e) {
 						ContinuityClient.LOGGER.warn("Invalid '" + propertyKey + "' element '" + blockStateStr + "' at index " + i + " in file '" + fileLocation + "' in pack '" + packId + "'", e);
 						continue;
 					}
 
 					if (BuiltInRegistries.BLOCK.containsKey(blockId)) {
-						Block block = BuiltInRegistries.BLOCK.get(blockId);
+						Block block = BuiltInRegistries.BLOCK.getValue(blockId);
 						if (!blockSet.contains(block)) {
 							if (parts.length > startIndex) {
 								Object2ObjectOpenHashMap<Property<?>, ObjectOpenHashSet<Comparable<?>>> propertyMap = new Object2ObjectOpenHashMap<>();
@@ -230,9 +228,9 @@ public final class PropertiesParsingHelper {
 						}
 
 						predicateMap.put(block, state -> {
-							Map<Property<?>, Comparable<?>> targetValueMap = state.getValues();
+							StateHolderAccessor<Block, BlockState> accessor = ((StateHolderAccessor<Block, BlockState>) state);
 							for (Map.Entry<Property<?>, ObjectOpenHashSet<Comparable<?>>> entry : entryArray) {
-								Comparable<?> targetValue = targetValueMap.get(entry.getKey());
+								Comparable<?> targetValue = accessor.continuity$getNullableValue(entry.getKey());
 								if (targetValue != null) {
 									if (!entry.getValue().contains(targetValue)) {
 										return false;
@@ -254,7 +252,7 @@ public final class PropertiesParsingHelper {
 	}
 
 	@Nullable
-	public static Symmetry parseSymmetry(Properties properties, String propertyKey, ResourceLocation fileLocation, String packId) {
+	public static Symmetry parseSymmetry(Properties properties, String propertyKey, Identifier fileLocation, String packId) {
 		String symmetryStr = properties.getProperty(propertyKey);
 		if (symmetryStr == null) {
 			return null;
@@ -269,7 +267,7 @@ public final class PropertiesParsingHelper {
 	}
 
 	@Nullable
-	public static OrientationMode parseOrientationMode(Properties properties, String propertyKey, ResourceLocation fileLocation, String packId) {
+	public static OrientationMode parseOrientationMode(Properties properties, String propertyKey, Identifier fileLocation, String packId) {
 		String orientationModeStr = properties.getProperty(propertyKey);
 		if (orientationModeStr == null) {
 			return null;
@@ -283,8 +281,8 @@ public final class PropertiesParsingHelper {
 		return null;
 	}
 
-	public static boolean parseOptifineOnly(Properties properties, ResourceLocation fileLocation) {
-		if (!fileLocation.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
+	public static boolean parseOptifineOnly(Properties properties, Identifier fileLocation) {
+		if (!fileLocation.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
 			return false;
 		}
 

@@ -1,6 +1,6 @@
 package me.pepperbell.continuity.client.properties;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -9,7 +9,7 @@ import java.util.Properties;
 public class ConnectingCtmProperties extends BasicConnectingCtmProperties {
 	protected boolean innerSeams = false;
 
-	public ConnectingCtmProperties(Properties properties, ResourceLocation resourceId, PackResources pack, int packPriority, ResourceManager resourceManager, String method) {
+	public ConnectingCtmProperties(Properties properties, Identifier resourceId, PackResources pack, int packPriority, ResourceManager resourceManager, String method) {
 		super(properties, resourceId, pack, packPriority, resourceManager, method);
 	}
 

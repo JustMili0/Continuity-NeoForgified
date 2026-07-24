@@ -1,8 +1,6 @@
 package me.pepperbell.continuity.client.processor.overlay;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.pepperbell.continuity.api.client.QuadProcessor;
-import me.pepperbell.continuity.client.processor.ProcessingDataKeys;
 import me.pepperbell.continuity.client.processor.ProcessingPredicate;
 import me.pepperbell.continuity.client.processor.simple.SimpleQuadProcessor;
 import me.pepperbell.continuity.client.processor.simple.SpriteProvider;
@@ -10,84 +8,40 @@ import me.pepperbell.continuity.client.properties.BaseCtmProperties;
 import me.pepperbell.continuity.client.properties.overlay.OverlayPropertiesSection;
 import me.pepperbell.continuity.client.util.QuadUtil;
 import me.pepperbell.continuity.client.util.RenderUtil;
-import me.pepperbell.continuity.client.util.TextureUtil;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
-import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
-import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.MutableQuadView;
+import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class SimpleOverlayQuadProcessor extends SimpleQuadProcessor {
 	protected int tintIndex;
 	@Nullable
 	protected BlockState tintBlock;
-	protected RenderMaterial material;
+	protected ChunkSectionLayer layer;
+	protected TriState ao;
 
-	public SimpleOverlayQuadProcessor(SpriteProvider spriteProvider, ProcessingPredicate processingPredicate, int tintIndex, @Nullable BlockState tintBlock, BlendMode layer) {
+	public SimpleOverlayQuadProcessor(SpriteProvider spriteProvider, ProcessingPredicate processingPredicate, int tintIndex, @Nullable BlockState tintBlock, ChunkSectionLayer layer) {
 		super(spriteProvider, processingPredicate);
 		this.tintIndex = tintIndex;
 		this.tintBlock = tintBlock;
-		material = RenderUtil.findOverlayMaterial(layer, this.tintBlock);
+		this.layer = layer;
+		this.ao = RenderUtil.aoFromTintBlock(tintBlock);
 	}
 
 	@Override
-	public ProcessingResult processQuad(MutableQuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter blockView, BlockState appearanceState, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, int pass, ProcessingContext context) {
-		if (processingPredicate.shouldProcessQuad(quad, sprite, blockView, appearanceState, state, pos, context)) {
-			TextureAtlasSprite newSprite = spriteProvider.getSprite(quad, sprite, blockView, appearanceState, state, pos, randomSupplier, context);
-			if (newSprite != null && !TextureUtil.isMissingSprite(newSprite)) {
-				OverlayEmitter emitter = context.getData(ProcessingDataKeys.SIMPLE_OVERLAY_EMITTER_POOL).get();
-				emitter.prepare(quad.lightFace(), newSprite, RenderUtil.getTintColor(tintBlock, blockView, pos, tintIndex), material);
-				context.addEmitterConsumer(emitter);
+	public ProcessingResult processQuad(MutableQuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter level, BlockPos pos, BlockState appearanceState, BlockState state, RandomSource random, int pass, ProcessingContext context) {
+		if (processingPredicate.shouldProcessQuad(quad, sprite, level, pos, appearanceState, state, context)) {
+			TextureAtlasSprite newSprite = spriteProvider.getSprite(quad, sprite, level, pos, appearanceState, state, random, context);
+			if (newSprite != null && !RenderUtil.isMissingSprite(newSprite)) {
+				QuadUtil.emitOverlayQuad(context.getExtraQuadEmitter(), quad.lightFace(), newSprite, RenderUtil.getTintColor(tintBlock, level, pos, tintIndex), layer, ao);
 			}
 		}
 		return ProcessingResult.NEXT_PROCESSOR;
-	}
-
-	public static class OverlayEmitter implements Consumer<QuadEmitter> {
-		protected Direction face;
-		protected TextureAtlasSprite sprite;
-		protected int color;
-		protected RenderMaterial material;
-
-		@Override
-		public void accept(QuadEmitter emitter) {
-			QuadUtil.emitOverlayQuad(emitter, face, sprite, color, material);
-		}
-
-		public void prepare(Direction face, TextureAtlasSprite sprite, int color, RenderMaterial material) {
-			this.face = face;
-			this.sprite = sprite;
-			this.color = color;
-			this.material = material;
-		}
-	}
-
-	public static class OverlayEmitterPool {
-		protected final List<OverlayEmitter> list = new ObjectArrayList<>();
-		protected int nextIndex = 0;
-
-		public OverlayEmitter get() {
-			if (nextIndex >= list.size()) {
-				list.add(new OverlayEmitter());
-			}
-			OverlayEmitter emitter = list.get(nextIndex);
-			nextIndex++;
-			return emitter;
-		}
-
-		public void reset() {
-			nextIndex = 0;
-		}
 	}
 
 	public static class Factory<T extends BaseCtmProperties & OverlayPropertiesSection.Provider> extends SimpleQuadProcessor.Factory<T> {

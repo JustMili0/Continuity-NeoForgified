@@ -1,6 +1,6 @@
 package me.pepperbell.continuity.api.client;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 @ApiStatus.NonExtendable
 public interface ProcessingDataKey<T> {
-	ResourceLocation getId();
+	Identifier getId();
 
 	int getRawId();
 

@@ -4,7 +4,7 @@ import com.google.gson.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
-import net.neoforged.fml.loading.FMLPaths;
+import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class ContinuityConfig {
 	protected static final Logger LOGGER = LoggerFactory.getLogger("Continuity Config");
 	protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	public static final ContinuityConfig INSTANCE = new ContinuityConfig(FMLPaths.CONFIGDIR.get().resolve("continuity.json").toFile());
+	public static final ContinuityConfig INSTANCE = new ContinuityConfig(FabricLoader.getInstance().getConfigDir().resolve("continuity.json").toFile());
 	static {
 		INSTANCE.load();
 	}
@@ -30,8 +30,6 @@ public class ContinuityConfig {
 
 	public final Option.BooleanOption connectedTextures = addOption(new Option.BooleanOption("connected_textures", true));
 	public final Option.BooleanOption emissiveTextures = addOption(new Option.BooleanOption("emissive_textures", true));
-	public final Option.BooleanOption customBlockLayers = addOption(new Option.BooleanOption("custom_block_layers", true));
-	public final Option.BooleanOption useManualCulling = addOption(new Option.BooleanOption("use_manual_culling", true));
 
 	public ContinuityConfig(File file) {
 		this.file = file;

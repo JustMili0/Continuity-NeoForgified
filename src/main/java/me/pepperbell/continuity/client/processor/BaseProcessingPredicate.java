@@ -2,13 +2,13 @@ package me.pepperbell.continuity.client.processor;
 
 import me.pepperbell.continuity.api.client.ProcessingDataProvider;
 import me.pepperbell.continuity.client.properties.BaseCtmProperties;
-import net.fabricmc.fabric.api.blockview.v2.FabricBlockView;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
+import net.fabricmc.fabric.api.blockgetter.v2.FabricBlockGetter;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadView;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Nameable;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,7 +37,7 @@ public class BaseProcessingPredicate implements ProcessingPredicate {
 	}
 
 	@Override
-	public boolean shouldProcessQuad(QuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter blockView, BlockState appearanceState, BlockState state, BlockPos pos, ProcessingDataProvider dataProvider) {
+	public boolean shouldProcessQuad(QuadView quad, TextureAtlasSprite sprite, BlockAndTintGetter level, BlockPos pos, BlockState appearanceState, BlockState state, ProcessingDataProvider dataProvider) {
 		if (heightPredicate != null) {
 			if (!heightPredicate.test(pos.getY())) {
 				return false;
@@ -58,13 +58,13 @@ public class BaseProcessingPredicate implements ProcessingPredicate {
 			}
 		}
 		if (biomePredicate != null) {
-			Biome biome = dataProvider.getData(ProcessingDataKeys.BIOME_CACHE).get(blockView, pos);
+			Biome biome = dataProvider.getData(ProcessingDataKeys.BIOME_CACHE).get(level, pos);
 			if (biome == null || !biomePredicate.test(biome)) {
 				return false;
 			}
 		}
 		if (blockEntityNamePredicate != null) {
-			String blockEntityName = dataProvider.getData(ProcessingDataKeys.BLOCK_ENTITY_NAME_CACHE).get(blockView, pos);
+			String blockEntityName = dataProvider.getData(ProcessingDataKeys.BLOCK_ENTITY_NAME_CACHE).get(level, pos);
 			if (blockEntityName == null || !blockEntityNamePredicate.test(blockEntityName)) {
 				return false;
 			}
@@ -82,9 +82,9 @@ public class BaseProcessingPredicate implements ProcessingPredicate {
 		protected boolean invalid = true;
 
 		@Nullable
-		public Biome get(BlockAndTintGetter blockView, BlockPos pos) {
+		public Biome get(BlockAndTintGetter level, BlockPos pos) {
 			if (invalid) {
-				biome = ((FabricBlockView) blockView).hasBiomes() ? ((FabricBlockView) blockView).getBiomeFabric(pos).value() : null;
+				biome = ((FabricBlockGetter) level).hasBiomes() ? ((FabricBlockGetter) level).getBiomeFabric(pos).value() : null;
 				invalid = false;
 			}
 			return biome;
@@ -101,9 +101,9 @@ public class BaseProcessingPredicate implements ProcessingPredicate {
 		protected boolean invalid = true;
 
 		@Nullable
-		public String get(BlockAndTintGetter blockView, BlockPos pos) {
+		public String get(BlockAndTintGetter level, BlockPos pos) {
 			if (invalid) {
-				BlockEntity blockEntity = blockView.getBlockEntity(pos);
+				BlockEntity blockEntity = level.getBlockEntity(pos);
 				if (blockEntity instanceof Nameable nameable) {
 					if (nameable.hasCustomName()) {
 						blockEntityName = nameable.getCustomName().getString();

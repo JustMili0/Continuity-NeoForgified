@@ -1,28 +1,32 @@
 package me.pepperbell.continuity.client.util;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import net.fabricmc.fabric.api.client.renderer.v1.Renderer;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.MutableMesh;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.MutableQuadView;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadTransform;
+import net.fabricmc.fabric.api.client.renderer.v1.model.FabricBlockStateModel;
 import net.fabricmc.fabric.api.client.rendering.v1.InvalidateRenderStateCallback;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.StampedLock;
-import java.util.function.Supplier;
 
 public final class SpriteCalculator {
-	private static final BlockModelShaper MODELS = Minecraft.getInstance().getModelManager().getBlockModelShaper();
-	private static final Direction[] CULL_FACES = ArrayUtils.add(Direction.values(), null);
+	private static final ModelManager MODEL_MANAGER = Minecraft.getInstance().getModelManager();
 
 	private static final EnumMap<Direction, SpriteCache> SPRITE_CACHES = new EnumMap<>(Direction.class);
 
@@ -39,24 +43,6 @@ public final class SpriteCalculator {
 		return SPRITE_CACHES.get(face).getSprites(state);
 	}
 
-	@Unmodifiable
-	public static Set<TextureAtlasSprite> calculateSprites(BlockState state, Direction face, Supplier<RandomSource> randomSupplier) {
-		List<TextureAtlasSprite> sprites = new ReferenceArrayList<>();
-		BakedModel model = MODELS.getBlockModel(state);
-		try {
-			for (Direction cullFace : CULL_FACES) {
-				for (BakedQuad quad : model.getQuads(state, cullFace, randomSupplier.get())) {
-					if (quad.getDirection() == face) {
-						sprites.add(quad.getSprite());
-					}
-				}
-			}
-		} catch (Exception e) {
-			//
-		}
-		return !sprites.isEmpty() ? Set.copyOf(sprites) : Set.of(model.getParticleIcon());
-	}
-
 	public static void clearCache() {
 		for (SpriteCache cache : SPRITE_CACHES.values()) {
 			cache.clear();
@@ -66,20 +52,14 @@ public final class SpriteCalculator {
 	private static class SpriteCache {
 		private final Direction face;
 		private final Reference2ObjectOpenHashMap<BlockState, Set<TextureAtlasSprite>> spritesMap = new Reference2ObjectOpenHashMap<>();
-		private final Supplier<RandomSource> randomSupplier = new Supplier<>() {
-			private final RandomSource random = RandomSource.create();
-
-			@Override
-			public RandomSource get() {
-				// Use item rendering seed for consistency
-				random.setSeed(42L);
-				return random;
-			}
-		};
+		private final MutableMesh mutableMesh = Renderer.get().mutableMesh();
+		private final CollectingQuadTransform quadTransform;
+		private final RandomSource random = RandomSource.createThreadLocalInstance();
 		private final StampedLock lock = new StampedLock();
 
 		public SpriteCache(Direction face) {
 			this.face = face;
+			quadTransform = new CollectingQuadTransform(face);
 		}
 
 		@Unmodifiable
@@ -113,7 +93,7 @@ public final class SpriteCalculator {
 				try {
 					sprites = spritesMap.get(state);
 					if (sprites == null) {
-						sprites = calculateSprites(state, face, randomSupplier);
+						sprites = calculateSprites(state);
 						spritesMap.put(state, sprites);
 					}
 				} finally {
@@ -124,12 +104,56 @@ public final class SpriteCalculator {
 			return sprites;
 		}
 
+		@Unmodifiable
+		private Set<TextureAtlasSprite> calculateSprites(BlockState state) {
+			BlockStateModel model = MODEL_MANAGER.getBlockStateModelSet().get(state);
+			QuadEmitter emitter = mutableMesh.emitter();
+			quadTransform.clear();
+			emitter.pushTransform(quadTransform);
+			random.setSeed(42);
+			try {
+				((FabricBlockStateModel) model).emitQuads(emitter, BlockAndTintGetter.EMPTY, BlockPos.ZERO, state, random, cullFace -> false);
+			} catch (Exception e) {
+				//
+			}
+			emitter.popTransform();
+			Set<TextureAtlasSprite> sprites = quadTransform.result();
+			return !sprites.isEmpty() ? sprites : Set.of(model.particleMaterial().sprite());
+		}
+
 		public void clear() {
 			long writeStamp = lock.writeLock();
 			try {
 				spritesMap.clear();
+				quadTransform.clear();
 			} finally {
 				lock.unlockWrite(writeStamp);
+			}
+		}
+
+		private static class CollectingQuadTransform implements QuadTransform {
+			private final Direction face;
+			private final List<TextureAtlasSprite> sprites = new ObjectArrayList<>();
+
+			private CollectingQuadTransform(Direction face) {
+				this.face = face;
+			}
+
+			@Override
+			public boolean transform(MutableQuadView quad) {
+				if (quad.lightFace() == face) {
+					sprites.add(RenderUtil.getSpriteFinder().find(quad));
+				}
+				return false;
+			}
+
+			public void clear() {
+				sprites.clear();
+			}
+
+			@Unmodifiable
+			public Set<TextureAtlasSprite> result() {
+				return Set.copyOf(sprites);
 			}
 		}
 	}

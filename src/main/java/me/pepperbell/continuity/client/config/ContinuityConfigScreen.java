@@ -1,7 +1,7 @@
 package me.pepperbell.continuity.client.config;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,18 +29,14 @@ public class ContinuityConfigScreen extends Screen {
 	protected void init() {
 		Value<Boolean> connectedTextures = Value.of(config.connectedTextures, Value.Flag.RELOAD_WORLD_RENDERER);
 		Value<Boolean> emissiveTextures = Value.of(config.emissiveTextures, Value.Flag.RELOAD_WORLD_RENDERER);
-		Value<Boolean> customBlockLayers = Value.of(config.customBlockLayers, Value.Flag.RELOAD_WORLD_RENDERER);
 
-		values = List.of(connectedTextures, emissiveTextures, customBlockLayers);
+		values = List.of(connectedTextures, emissiveTextures);
 
 		addRenderableWidget(startBooleanValueButton(connectedTextures)
-				.bounds(width / 2 - 100 - 110, height / 2 - 10 - 12, 200, 20)
+				.bounds(width / 2 - 100 - 110, height / 2 - 10, 200, 20)
 				.build());
 		addRenderableWidget(startBooleanValueButton(emissiveTextures)
-				.bounds(width / 2 - 100 + 110, height / 2 - 10 - 12, 200, 20)
-				.build());
-		addRenderableWidget(startBooleanValueButton(customBlockLayers)
-				.bounds(width / 2 - 100 - 110, height / 2 - 10 + 12, 200, 20)
+				.bounds(width / 2 - 100 + 110, height / 2 - 10, 200, 20)
 				.build());
 
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
@@ -56,9 +52,9 @@ public class ContinuityConfigScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredString(font, title, width / 2, 30, 0xFFFFFF);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+		super.extractRenderState(graphics, mouseX, mouseY, a);
+		graphics.centeredText(font, title, width / 2, 30, 0xFFFFFF);
 	}
 
 	@Override
@@ -83,20 +79,20 @@ public class ContinuityConfigScreen extends Screen {
 		}
 	}
 
-	public static String getTranslationKey(String optionKey) {
+	static String getTranslationKey(String optionKey) {
 		return "options.continuity." + optionKey;
 	}
 
-	public static String getTooltipKey(String translationKey) {
+	static String getTooltipKey(String translationKey) {
 		return translationKey + ".tooltip";
 	}
 
 	private Button.Builder startBooleanValueButton(Value<Boolean> value) {
 		String translationKey = getTranslationKey(value.getOption().getKey());
-		Component text = Component.translatable(translationKey);
-		Component tooltipText = Component.translatable(getTooltipKey(translationKey));
+		Component component = Component.translatable(translationKey);
+		Component tooltipComponent = Component.translatable(getTooltipKey(translationKey));
 
-		return Button.builder(CommonComponents.optionNameValue(text, CommonComponents.optionStatus(value.get())),
+		return Button.builder(CommonComponents.optionNameValue(component, CommonComponents.optionStatus(value.get())),
 				button -> {
 					boolean newValue = !value.get();
 					value.set(newValue);
@@ -104,9 +100,9 @@ public class ContinuityConfigScreen extends Screen {
 					if (value.isChanged()) {
 						valueText = valueText.copy().withStyle(style -> style.withBold(true));
 					}
-					button.setMessage(CommonComponents.optionNameValue(text, valueText));
+					button.setMessage(CommonComponents.optionNameValue(component, valueText));
 				})
-				.tooltip(Tooltip.create(tooltipText));
+				.tooltip(Tooltip.create(tooltipComponent));
 	}
 
 	private static class Value<T> {
