@@ -1,11 +1,10 @@
 [versions]
-minecraft = "1.21.1"
-parchment = "2024.11.17"
+minecraft = "26.1.2"
 
 # https://fabricmc.net/develop
-neoforge = "21.1.223"
-forgified_fabric_api = "0.116.7+2.2.4+1.21.1"
-moddevgradle = "2.0.141"
+neoforge = "26.1.2.71"
+forgified_fabric_api = "0.155.0+26.1.2+3.4.2"
+moddevgradle = "2.0.142"
 
 # https://github.com/Bawnorton/MixinSquared/releases
 mixinsquared = "0.3.3"

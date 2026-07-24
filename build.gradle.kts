@@ -12,11 +12,6 @@ base {
 neoForge {
     version = libs.versions.neoforge.get()
 
-    parchment {
-        mappingsVersion = libs.versions.parchment.get()
-        minecraftVersion = libs.versions.minecraft.get()
-    }
-
     mods {
         create(modId) {
             sourceSet(sourceSets.main.get())
@@ -74,12 +69,12 @@ tasks {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release = 21
+    options.release = 25
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.jar {
